@@ -20,7 +20,7 @@ import tensorflow as tf
 from gpflow.base import Parameter
 from gpflow.likelihoods import Likelihood
 
-from markovflow.kalman_filter import KalmanFilterWithSites, UnivariateGaussianSitesNat
+from markovflow.kalman_filter import KalmanFilterWithSites, GaussianSitesNat
 from markovflow.kernels import SDEKernel
 from markovflow.mean_function import MeanFunction, ZeroMeanFunction
 from markovflow.models.models import MarkovFlowModel
@@ -96,7 +96,7 @@ class GaussianProcessWithSitesBase(MarkovFlowModel):
         self._observations = observations
 
         # initialize sites
-        self.sites = UnivariateGaussianSitesNat(
+        self.sites = GaussianSitesNat(
             nat1=Parameter(tf.zeros_like(observations)),
             nat2=Parameter(tf.ones_like(observations)[..., None] * -1e-10),
             log_norm=Parameter(tf.zeros_like(observations)),
@@ -457,4 +457,6 @@ def gradient_transformation_mean_var_to_expectation(
     :param inputs: Means and variances :math:`[μ, σ²]`.
     :param grads: Gradients :math:`𝐠`.
     """
-    return grads[0] - 2.0 * grads[1] * inputs[0], grads[1]
+    if len(grads[1].shape) == 2:
+        return grads[0] - 2.0 * grads[1] * inputs[0], grads[1]
+    return grads[0] - 2.0 * (grads[1] @ inputs[0][..., None])[:, :, 0], grads[1]

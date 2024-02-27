@@ -1,0 +1,4 @@
+_target_: markovflow.sde.SqrtDiffusionSDE
+_partial_: true
+theta: 1
+trainable: ${trainer.learn_prior_sde}

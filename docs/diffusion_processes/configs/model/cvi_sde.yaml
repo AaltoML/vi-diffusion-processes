@@ -1,0 +1,5 @@
+defaults:
+  - likelihood: gaussian
+
+_target_: markovflow.models.CVISitesSDE
+_partial_: true

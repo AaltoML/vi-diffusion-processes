@@ -18,3 +18,8 @@ build/
 
 # Default virtual env location created by poetry
 .venv/
+
+.DS_Store
+outputs
+data/
+wandb/

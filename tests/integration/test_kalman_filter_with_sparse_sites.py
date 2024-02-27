@@ -6,7 +6,7 @@ from gpflow.config import default_float
 from markovflow.kernels.matern import Matern12
 from markovflow.mean_function import LinearMeanFunction
 from markovflow.models.gaussian_process_regression import GaussianProcessRegression
-from markovflow.kalman_filter import KalmanFilterWithSparseSites, UnivariateGaussianSitesNat, KalmanFilterWithSites
+from markovflow.kalman_filter import KalmanFilterWithSparseSites, GaussianSitesNat, KalmanFilterWithSites
 
 
 @pytest.fixture(
@@ -58,7 +58,7 @@ def _setup(batch_shape, time_step_homogeneous):
     nat1 = observations / observation_covariance
     nat2 = (-0.5 / observation_covariance) * tf.ones_like(nat1)[..., None]
     lognorm = tf.zeros_like(nat1)
-    sites = UnivariateGaussianSitesNat(nat1=nat1, nat2=nat2, log_norm=lognorm)
+    sites = GaussianSitesNat(nat1=nat1, nat2=nat2, log_norm=lognorm)
 
     kf_sparse_sites = KalmanFilterWithSparseSites(prior_ssm, emission_model, sites, time_grid.shape[0],
                                                   observations_index, observations)
@@ -83,7 +83,7 @@ def _get_kf_sites(kf_sparse_sites: KalmanFilterWithSparseSites):
     nat1 = kf_sparse_sites.sparse_to_dense(kf_sparse_sites.sites.nat1, kf_sparse_sites.grid_shape)
     nat2 = kf_sparse_sites.sparse_to_dense(kf_sparse_sites.sites.nat2, kf_sparse_sites.grid_shape + (1,)) + 1e-20
     log_norm = kf_sparse_sites.sparse_to_dense(kf_sparse_sites.sites.log_norm, kf_sparse_sites.grid_shape)
-    sites = UnivariateGaussianSitesNat(nat1, nat2, log_norm)
+    sites = GaussianSitesNat(nat1, nat2, log_norm)
 
     return KalmanFilterWithSites(kf_sparse_sites.prior_ssm,  kf_sparse_sites.emission, sites)
 

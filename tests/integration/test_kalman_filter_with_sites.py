@@ -19,7 +19,7 @@ import pytest
 import tensorflow as tf
 
 from markovflow.emission_model import EmissionModel
-from markovflow.kalman_filter import KalmanFilterWithSites, UnivariateGaussianSitesNat
+from markovflow.kalman_filter import KalmanFilterWithSites, GaussianSitesNat
 from markovflow.state_space_model import StateSpaceModel
 from tests.integration.test_kalman_filter import (
     test_log_likelihood,
@@ -109,7 +109,7 @@ def _setup():
     emission_model = EmissionModel(tf.constant(emission_matrix))
 
     # create sites parameterized in natural form
-    sites = UnivariateGaussianSitesNat(nat1=means / covariances[..., 0], nat2=-0.5 / covariances)
+    sites = GaussianSitesNat(nat1=means / covariances[..., 0], nat2=-0.5 / covariances)
     tf_kalman_filter = KalmanFilterWithSites(ssm, emission_model, sites)
 
     return np_kalman_filter, means, tf_kalman_filter

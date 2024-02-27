@@ -1,0 +1,4 @@
+_target_: gpflow.models.SGPR
+_partial_: true
+
+noise_variance: 1.0

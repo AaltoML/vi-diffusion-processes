@@ -1,0 +1,38 @@
+defaults:
+  - base
+  - model: vi_markov_gp
+
+dataloader:
+  _target_: docs.diffusion_processes.exp_dp_utils.load_exp_data
+  data_path: ${data_path}
+
+trainer:
+  _target_: docs.diffusion_processes.vi_markov_gp_trainer.VIMarkovGPTrainer
+  _partial_: true
+  q_lr: 0.1
+  x0_lr: 0.1
+  max_itr: 1000
+  lr_tol: 1e-2
+  optim_tol: 1e-4
+  warmup_x0_itr: 10
+  learn_prior_sde: false
+  prior_sde_lr: 1e-2
+  learning_max_itr: 100
+  learning_tol: 1e-4
+  optimize_prior_initial_state: false
+  prior_initial_state_lr: 1e-2
+
+prior_sde: ???
+
+wandb:
+  username: null
+  tags: []
+
+data_path: ???
+dt: null
+prior_x0_mean: null
+prior_x0_cov: null
+
+stabilize_system: false
+cvi_posterior_path: null
+vi_model_path: null

@@ -1,0 +1,4 @@
+_target_: markovflow.models.GaussianProcessRegression
+_partial_: true
+
+chol_obs_covariance: 0.1

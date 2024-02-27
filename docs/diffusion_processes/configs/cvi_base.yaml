@@ -1,0 +1,31 @@
+defaults:
+  - base
+  - model: cvi_sde
+
+dataloader:
+  _target_: docs.diffusion_processes.exp_dp_utils.load_exp_data
+  data_path: ${data_path}
+
+prior_sde: ???
+
+trainer:
+  _target_: docs.diffusion_processes.cvi_dp_trainer.CVISitesTrainer
+  _partial_: true
+  girsanov_sites_lr: .1
+  data_sites_lr: .1
+  max_itr: 200
+  optim_tol: 1e-2
+  max_itr_sites_optim: 5
+  learn_prior_sde: false
+  prior_sde_lr: 1e-2
+  learning_max_itr: 100
+  learning_tol: 1e-4
+
+wandb:
+  username: null
+  tags: []
+
+stabilize_ssm: True
+clip_state_transitions: [-1, 1]
+data_path: ???
+dt: null

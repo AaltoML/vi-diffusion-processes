@@ -1,0 +1,16 @@
+defaults:
+  - vi_base
+  - prior_sde: dw
+
+trainer:
+  q_lr: 0.1
+  x0_lr: 0.1
+  max_itr: 1000
+  warmup_x0_itr: 10
+  optim_tol: 1e-2
+
+wandb:
+  tags: ["VI"]
+
+prior_x0_mean: 1.
+prior_x0_cov: 1e-4

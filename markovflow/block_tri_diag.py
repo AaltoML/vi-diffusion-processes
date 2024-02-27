@@ -411,12 +411,16 @@ class SymmetricBlockTriDiagonal(BlockTriDiagonal):
 
     def __add__(self, other: "SymmetricBlockTriDiagonal") -> "SymmetricBlockTriDiagonal":
         """Add two :class:`SymmetricBlockTriDiagonal` tensors together."""
-        if self._sub_diag is not None:
-            sub_diag = self.block_sub_diagonal
-            if other.block_sub_diagonal is not None:
-                sub_diag += other.block_sub_diagonal
+        # if other is just a tensor for diagonal
+        if not isinstance(other, BlockTriDiagonal):
+            return SymmetricBlockTriDiagonal(self.block_diagonal + other, self.block_sub_diagonal)
         else:
-            sub_diag = other.block_sub_diagonal
+            if self._sub_diag is not None:
+                sub_diag = self.block_sub_diagonal
+                if other.block_sub_diagonal is not None:
+                    sub_diag += other.block_sub_diagonal
+            else:
+                sub_diag = other.block_sub_diagonal
 
         return SymmetricBlockTriDiagonal(self.block_diagonal + other.block_diagonal, sub_diag)
 

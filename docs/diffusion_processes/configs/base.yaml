@@ -1,0 +1,5 @@
+hydra:
+  run:
+    dir: ./outputs//${now:%Y-%m-%d}/${now:%H-%M-%S-%s-${random_number}}
+
+random_number: 0

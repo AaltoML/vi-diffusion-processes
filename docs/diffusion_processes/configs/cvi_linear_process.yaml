@@ -1,0 +1,13 @@
+defaults:
+  - cvi_base
+  - prior_sde: ou
+
+trainer:
+  girsanov_sites_lr: 1.0
+  data_sites_lr: 1.0
+  max_itr: 1
+  max_itr_sites_optim: 1
+  prior_sde_lr: 0.01
+
+wandb:
+  tags: ["CVI"]

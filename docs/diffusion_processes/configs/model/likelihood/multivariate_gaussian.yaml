@@ -1,0 +1,4 @@
+_target_: markovflow.likelihoods.MultivariateGaussian
+chol_covariance:
+  _target_: tensorflow.ones
+  shape: [1, 1]

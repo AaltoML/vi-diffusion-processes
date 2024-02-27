@@ -1,0 +1,26 @@
+defaults:
+  - vi_base
+  - prior_sde: mlpdrift
+
+dataloader:
+  _target_: docs.diffusion_processes.exp_dp_utils.load_apple_stock_exp_data
+  data_path: ${data_path}
+
+trainer:
+  q_lr: 0.1
+  x0_lr: 0.1
+  max_itr: 1000
+  learn_prior_sde: true
+  warmup_x0_itr: 10
+  optim_tol: 1e-4
+  optimize_prior_initial_state: false
+  prior_sde_lr: 1e-2
+
+wandb:
+  tags: ["VDP", "Apple Stock"]
+
+prior_x0_mean: -1
+prior_x0_cov: 0.1
+
+cvi_posterior_path: null
+vi_model_path: null

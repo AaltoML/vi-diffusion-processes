@@ -1,0 +1,4 @@
+_target_: markovflow.sde.SineDiffusionSDE
+_partial_: true
+theta: 0
+trainable: ${trainer.learn_prior_sde}

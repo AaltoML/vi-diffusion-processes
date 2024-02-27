@@ -1,0 +1,6 @@
+_target_: markovflow.sde.DoubleWellSDE
+_partial_: true
+scale: 4.
+c: 1.
+c_trainable: ${trainer.learn_prior_sde}
+scale_trainable: False

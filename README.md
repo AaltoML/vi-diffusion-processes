@@ -1,3 +1,25 @@
+# Variational Gaussian Process Diffusion Processes
+This fork of **Markovflow** contains the official implementation of the methods in the publication:
+
+* P. Verma, V. Adam, and A. Solin, (2024). **Variational Gaussian Process Diffusion Processes**. In *Proceedings of the International Conference on Artificial Intelligence and Statistics (AISTATS)*. [arXiv](https://arxiv.org/abs/2306.02066)
+
+Diffusion processes are a class of stochastic differential equations (SDEs) providing a rich family of expressive models
+that arise naturally in dynamic modelling tasks. Probabilistic inference and learning under generative models with 
+latent processes endowed with a non-linear diffusion process prior are intractable problems. We build upon work within
+variational inference, approximating the posterior process as a linear diffusion process, and point out pathologies 
+in the approach. We propose an alternative parameterization of the Gaussian variational process using a site-based 
+exponential family description. This allows us to trade a slow inference algorithm with fixed-point iterations for 
+a fast algorithm for convex optimization akin to natural gradient descent, which also provides a better objective 
+for learning model parameters
+
+The VDP and CVI-DP models are present in the directory: `markovflow/models/`.
+
+All the experiments included in the paper are present in the directory: `docs/diffusion_processes/`. For more details go through the following [README](docs/diffusion_processes/README.md). 
+
+For all correspondence, please contact [prakhar.verma@aalto.fi](mailto:prakhar.verma@aalto.fi).
+
+___
+
 # Markovflow
 
 <!-- TODO: -->

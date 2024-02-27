@@ -1,0 +1,26 @@
+defaults:
+  - cvi_base
+  - prior_sde: mlpdrift
+
+dataloader:
+  _target_: docs.diffusion_processes.exp_dp_utils.load_apple_stock_exp_data
+  data_path: ${data_path}
+
+trainer:
+  girsanov_sites_lr: .5
+  data_sites_lr: .5
+  max_itr: 1000
+  optim_tol: 1e-4
+  max_itr_sites_optim: 100
+  learn_prior_sde: true
+  prior_sde_lr: 1e-3
+  learning_max_itr: 100
+  learning_tol: 1e-4
+
+wandb:
+  tags: ["Apple Stock"]
+
+prior_x0_mu: -1.
+prior_x0_cov: 0.1
+stabilize_ssm: False
+data_path: ???

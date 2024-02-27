@@ -1,0 +1,5 @@
+_target_: markovflow.sde.VanderPolOscillatorSDE
+_partial_: true
+a: 1
+tau: 1
+trainable: ${trainer.learn_prior_sde}

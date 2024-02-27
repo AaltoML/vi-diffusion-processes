@@ -1,0 +1,20 @@
+defaults:
+  - base
+  - model: gpr
+
+dataloader:
+  _target_: docs.diffusion_processes.exp_dp_utils.load_exp_data
+  data_path: ${data_path}
+
+wandb:
+  username: null
+  tags: ["GPR", "LinearDP"]
+
+decay: ???
+data_path: ???
+dt: null
+
+optimize: false
+lr: 1e-2
+max_itr: 10000
+optim_tol: 1e-4

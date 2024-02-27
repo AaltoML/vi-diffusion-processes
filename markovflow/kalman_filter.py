@@ -379,9 +379,9 @@ class GaussianSites(gpflow.Module, ABC):
         raise NotImplementedError
 
 
-class UnivariateGaussianSitesNat(GaussianSites):
+class GaussianSitesNat(GaussianSites):
     """
-    This class is a wrapper around parameters of univariate Gaussian distributions
+    This class is a wrapper around parameters of Gaussian distributions
     in the natural form. That is:
 
     .. math:: p(f) = exp(𝞰ᵀφ(f) - A(𝞰))
@@ -401,11 +401,11 @@ class UnivariateGaussianSitesNat(GaussianSites):
         """
         super().__init__()
         shape_constraints = [
-            (nat1, ["N", 1]),
-            (nat2, ["N", 1, 1]),
+            (nat1, ["N", "D"]),
+            (nat2, ["N", "D", "D"]),
         ]
         if log_norm is not None:
-            shape_constraints += [(log_norm, ["N", 1])]
+            shape_constraints += [(log_norm, ["N", "D"])]
         tf.debugging.assert_shapes(shape_constraints)
 
         self.num_data, self.output_dim = nat1.shape
@@ -418,7 +418,10 @@ class UnivariateGaussianSitesNat(GaussianSites):
         """
         Return the means of the Gaussians.
         """
-        return -0.5 * self.nat1 / self.nat2[..., 0]
+        nat2_inv = tf.linalg.inv(self.nat2)
+        mean_val = -0.5 * (nat2_inv @ self.nat1[..., None])[..., 0]
+        assert mean_val.shape == self.nat1.shape
+        return mean_val
 
     @property
     def precisions(self):
@@ -504,8 +507,15 @@ class KalmanFilterWithSparseSites(BaseKalmanFilter):
     and :class:`~markovflow.emission_model.EmissionModel`, with Gaussian sites, over a time grid.
     """
 
-    def __init__(self, state_space_model: StateSpaceModel, emission_model: EmissionModel, sites: GaussianSites,
-                 num_grid_points: int, observations_index: tf.Tensor, observations: tf.Tensor):
+    def __init__(
+        self,
+        state_space_model: StateSpaceModel,
+        emission_model: EmissionModel,
+        sites: GaussianSites,
+        num_grid_points: int,
+        observations_index: tf.Tensor,
+        observations: tf.Tensor,
+    ):
         """
         :param state_space_model: Parameterises the latent chain.
         :param emission_model: Maps the latent chain to the observations.
@@ -533,8 +543,10 @@ class KalmanFilterWithSparseSites(BaseKalmanFilter):
         Check the batch, if present, is equal to 1, and drop it.
         """
         tensor_shape = tensor._shape_as_list()
-        if len(tensor_shape) < 3: return tensor
-        if tensor_shape[0] != 1: raise Exception("KalmanFilterWithSparseSites doesn't support batches")
+        if len(tensor_shape) < 3:
+            return tensor
+        if tensor_shape[0] != 1:
+            raise Exception("KalmanFilterWithSparseSites doesn't support batches")
 
         return tf.squeeze(tensor, axis=0)
 
@@ -581,7 +593,7 @@ class KalmanFilterWithSparseSites(BaseKalmanFilter):
         Construct a TensorFlow function to compute the likelihood.
 
         For more mathematical details, look at the log_likelihood function of the parent class.
-        The main difference from the parent class are that the vector of observations is now sparse.        
+        The main difference from the parent class are that the vector of observations is now sparse.
 
         :return: The likelihood as a scalar tensor (we sum over the `batch_shape`).
         """
@@ -599,12 +611,13 @@ class KalmanFilterWithSparseSites(BaseKalmanFilter):
 
         # cst is the constant term for a gaussian log likelihood
         cst = (
-                -0.5 * np.log(2 * np.pi) * tf.cast(self.emission.output_dim * num_data, default_float())
+            -0.5 * np.log(2 * np.pi) * tf.cast(self.emission.output_dim * num_data, default_float())
         )
 
         term1 = -0.5 * tf.reduce_sum(
-                input_tensor=tf.einsum("...op,...p,...o->...o", self._r_inv_data, disp_data, disp_data), axis=[-1, -2]
-            )
+            input_tensor=tf.einsum("...op,...p,...o->...o", self._r_inv_data, disp_data, disp_data),
+            axis=[-1, -2],
+        )
 
         # term 2 is: ½|L⁻¹(GᵀΣ⁻¹)y|²
         # (GᵀΣ⁻¹)y [..., num_transitions + 1, state_dim]
@@ -618,9 +631,9 @@ class KalmanFilterWithSparseSites(BaseKalmanFilter):
         ## term 3 is: ½log |K⁻¹| - log |L| + ½ log |Σ⁻¹|
         # where log |Σ⁻¹| = num_data * log|R⁻¹|
         term3 = (
-                0.5 * self.prior_ssm.log_det_precision()
-                - l_post.abs_log_det()
-                + 0.5 * self._log_det_observation_precision
+            0.5 * self.prior_ssm.log_det_precision()
+            - l_post.abs_log_det()
+            + 0.5 * self._log_det_observation_precision
         )
 
         return tf.reduce_sum(cst + term1 + term2 + term3)
